@@ -1,0 +1,1545 @@
+* Rust study notes
+** basic start
+   Rust program starts with the function main.
+   #+BEGIN_SRC rust
+     fn main() {
+         // note that println! is not a function, it's a marcro.
+         println!("Hello World!");
+     }
+   #+END_SRC
+   
+   You can claim functions after where they are used.
+   #+BEGIN_SRC rust
+     fn main() {
+         hello_world();
+     }
+
+     fn hello_world(){
+         println!("Hello World");
+     }
+   #+END_SRC
+   
+** variable & variable types
+   You can specify variable type while binding them.
+   #+BEGIN_SRC rust
+     fn main() {
+         let a: i32 = 24;
+     }
+   #+END_SRC
+   You can skip type claiming part, rust can deduce which type should use.
+   #+BEGIN_SRC rust
+     fn main() {
+         let a = 32; // a: i32
+     }
+   #+END_SRC
+
+   Variables are immutable by default, add 'mut', so that it can be changed.
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut a = 24; // a: i32
+         a = 99;
+     }
+   #+END_SRC
+   
+   Use blocks to limit variable effect area is recommended.
+   #+BEGIN_SRC rust
+     fn main() {
+         let a: i32 = 24;
+         let b: i32 = 50;
+         {
+             let b: i32 = 30;
+             println!("a is {}, b is {}", a, b); // result is 24,30
+         }
+         println!("a is {}, b is {}", a, b); // result is 24,50
+     }
+   #+END_SRC
+
+*** types
+    #+BEGIN_SRC rust
+      fn main() {
+          // bool, has two values -> true false
+          let mut a: bool = true;
+          a = false;
+
+          // char, one unicode char value
+          let b = 'x';
+
+          // with negative types starts with "i"
+          let c: i8 = 2;
+          let c: i16 = 2;
+          let c: i32 = 2;
+          let c: i64 = 2;
+          let c: isize = 2; // size changeable
+          // none negative types starts with "u"
+          let c: u8 = 2;
+          let c: u16 = 2;
+          let c: u32 = 2;
+          let c: u64 = 2;
+          let c: usize = 2; // size changeable
+
+          // float types
+          let d: f32 = 2.1;
+          let d: f64 = 2.1;
+
+          // array
+          let e = [1, 2, 3]; // e: [i32; 3]
+          // Array is not changeable by default
+          let mut e = [1, 2, 3]; // e: [i32; 3]
+          // The type of an array is [T, N]  (see generic for more info)
+          // You can use [T, N] initialize array
+          let e = [2; 3]; // You will get [2, 2, 2]
+          a.len(); // returns the length of array
+
+          // slices
+          let a = [0, 1, 2, 3, 4];
+          let b = &a[..]; // all elements in a
+          let b = &a[1..3]; // just [1, 2]
+
+          // string
+          // todo
+
+          // Tuples
+          // pretty much like objects in javascript
+          let x: (i32, &str) = (1, "hello");
+          let (a, b) = x;
+          let a = x.0;
+          let b = x.1;
+
+          // function types
+          // this indicates the signature of a function
+          let f: fn(i32) -> i32 = some_function;
+      }
+    #+END_SRC
+    This shows the exactly range of each number type:
+    #+BEGIN_SRC rust
+      fn main() {
+          println!("i8 MIN {}", std::i8::MIN);
+          println!("i8 MAX {}", std::i8::MAX);
+          println!("i16 MIN {}", std::i16::MIN);
+          println!("i16 MAX {}", std::i16::MAX);
+          println!("i32 MIN {}", std::i32::MIN);
+          println!("i32 MAX {}", std::i32::MAX);
+          println!("i64 MIN {}", std::i64::MIN);
+          println!("i64 MAX {}", std::i64::MAX);
+          println!("u8 MIN {}", std::u8::MIN);
+          println!("u8 MAX {}", std::u8::MAX);
+          println!("u16 MIN {}", std::u16::MIN);
+          println!("u16 MAX {}", std::u16::MAX);
+          println!("u32 MIN {}", std::u32::MIN);
+          println!("u32 MAX {}", std::u32::MAX);
+          println!("u64 MIN {}", std::u64::MIN);
+          println!("u64 MAX {}", std::u64::MAX);
+          println!("f32 MIN {}", std::f32::MIN);
+          println!("f32 MAX {}", std::f32::MAX);
+          println!("f64 MIN {}", std::f64::MIN);
+          println!("f64 MAX {}", std::f64::MAX);
+      }
+    #+END_SRC
+
+** functions
+   If a function takes parameter(s), it has to claim parameter type.
+   #+BEGIN_SRC rust
+     fn main() {
+         let a = 32; // a: i32
+         let b = add_one(a);
+         println!("b is {}", b);
+     }
+
+     // use "->" returns a value
+     fn add_one(x: i32) -> i32 {
+     // this returns x + 1, if you add ";" after 1, this returns "()"
+         x + 1
+     }
+   #+END_SRC
+
+   You can bind variables to functions.
+   #+BEGIN_SRC rust
+     fn main() {
+         let a = 32; // a: i32
+         let f: fn(i32) -> i32 = add_one;
+         let b = f(a);
+         println!("b is {}", b); // result is 33
+     }
+
+     fn add_one(x: i32) -> i32 {
+         x + 1
+     }
+   #+END_SRC
+
+** if else
+   #+BEGIN_SRC rust
+     fn main() {
+         let a = 5;
+         // this is a strictly equal, include type equal
+         if a == 5 {
+             println!("a is five");
+         } else {
+             println!("a is not five");
+         }
+     }
+   #+END_SRC
+   
+   If you want get something like javascript below
+   #+BEGIN_SRC javascript
+     const a = 3 > 4 ? 20 : 21;
+   #+END_SRC
+   Use this if else in rust:
+   #+BEGIN_SRC rust
+     fn main() {
+         let a = 5; // a: i32
+         let b = if a == 5 { 3 } else { 4 }; // b: i32
+     }
+   #+END_SRC
+
+   Note that a if without else might returns () as value.
+** for, loop, while
+*** basics
+   Loop
+   #+BEGIN_SRC rust
+     fn main() {
+         loop {
+             println!("This is going to loop forever!");
+         }
+     }
+   #+END_SRC
+   
+   While
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut x = 5; // x: i32
+         let mut done = false; // done: bool
+
+         while !done {
+             x = x - 1;
+             println!("x is {}", x);
+             if x < 0 {
+                 done = true;
+             }
+         }
+     }
+   #+END_SRC
+
+   For in
+   #+BEGIN_SRC rust
+     fn main() {
+         for x in 1..10 {
+             println!("x is {}", x);
+         }
+         // this will get 2-9
+     }
+   #+END_SRC
+
+*** enumerate
+    if you intend to get how many times you have been in the loop, use enumerate.
+    #+BEGIN_SRC rust
+      fn main() {
+          for (index, value) in (5..10).enumerate() {
+              println!("index is {}, value is {}", index, value);
+          }
+      }
+    #+END_SRC
+    For iterators
+    #+BEGIN_SRC rust
+      fn main() {
+          let lines = "hello\nworld".lines();
+          for (linenum, line) in lines.enumerate() {
+              println!("line number is {}, line is {}", linenum, line);
+          }
+      }
+    #+END_SRC
+
+*** break & continue
+    Same as they are expected.
+
+*** loop labels
+    You can break or continue outer loop in inner loop, by using loop labels.
+    #+BEGIN_SRC rust
+      fn main() {
+          'outer: for x in 0..10 {
+              'inner: for y in 0..10 {
+                  if x % 2 == 0 {
+                      continue 'outer;
+                  }
+                  if y % 2 == 0 {
+                      continue 'inner;
+                  }
+                  println!("x is {}, y is {}", x, y);
+              }
+          }
+      }
+    #+END_SRC
+** vector & array & slices
+   #+BEGIN_SRC rust
+     fn main() {
+         let v = vec![1, 2, 3, 4]; // v: Vec<i32>
+     }
+   #+END_SRC
+
+   Array and slice are fixed length, you can't push or pop elements, vectors are length changeable array.
+
+   Note that vectors can only indexed by usize variables.
+   #+BEGIN_SRC rust
+     fn main() {
+         let v = vec![1, 2, 3, 4]; // v: Vec<i32>
+
+         let i: usize = 1;
+         let j: i32 = 1;
+
+         v[i]; // this works
+         v[j]; // this doesn't work
+     }
+   #+END_SRC
+
+   There are 3 ways to iterate a vector with for loop.
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut v = vec![1, 2, 3, 4, 5];
+
+         for i in &v {
+             println!("A reference to {}", i);
+         }
+
+         for i in &mut v {
+             println!("A mutable reference to {}", i);
+         }
+
+         for i in v {
+             println!("Take ownership of the vector and its element {}", i);
+         }
+     }
+   #+End_SRC
+
+   Note that you can't iterate vector more than one time by using ownership.
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut v = [1, 2, 3, 4, 5];
+
+         for i in v {
+             println!("Take ownership of the vector and its element {}", i);
+         }
+
+         for i in v {
+             println!("Take ownership of the vector and its element {}", i);
+         }
+         // this won't work
+     }
+   #+END_SRC
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut v = vec![1, 2, 3, 4, 5];
+
+         for i in &v {
+             println!("Take ownership of the vector and its element {}", i);
+         }
+
+         for i in &v {
+             println!("Take ownership of the vector and its element {}", i);
+         }
+         // this works
+     }
+   #+END_SRC
+
+   Note that the type of array is [T; N], the type of vector is Vec<T>.
+
+** ownership 
+   This might be the most special part of rust.
+   
+   Note that if a variable leaves its effect area, this variable will be cleared in memory deterministically!
+   
+   Rust insures that there is only one variable bind to resource.
+   #+BEGIN_SRC rust
+     fn main() {
+         let v = vec![1, 2, 3];
+         let v2 = v;
+         println!("v[0] is {}", v[0]); // this won't work
+     }
+   #+END_SRC
+   This behavior happens because the consideration of memory safety.
+   View the code below:
+   #+BEGIN_SRC rust
+     fn main() {
+         let v = vec![1, 2, 3]; // v knows that it's bind to a vector with 3 elements
+         let mut v2 = v; // v2 takes ownership of that vector
+         v2.truncate(2); // v2 shrink to 2 elements
+
+         let three: isize = 3;
+         v[tree]; // if v is still able to be visited, this would point to an invalid vector element
+     }
+   #+END_SRC
+
+   However this would work:
+   #+BEGIN_SRC rust
+     fn main() {
+         let v:i32 = 1;
+         let v2 = v;
+         println!("v is {}", v);
+     }
+   #+END_SRC
+   This is because type i32 implemented method copy, all basic types has implemented copy.
+
+   In order to avoid ownership conflict, use &variable to borrow value from other variables.
+   
+   Instead of this
+   #+BEGIN_SRC rust
+     fn main() {
+         let v = vec![1, 2, 3];
+         fn doSomething(x: Vec<i32>) {
+             // do some stuff
+             v
+         }
+         let v = doSomething(v);
+     }
+   #+End_SRC
+   Use this
+   #+BEGIN_SRC rust
+     fn main() {
+         let v = vec![1, 2, 3];
+         fn doSomething(x: &Vec<i32>) {
+             // do some stuff
+         }
+         doSomething(v);
+         // you can still have access to v here
+     }
+   #+END_SRC
+   
+   Note that references are immutable by default, use &mut to make it mutable.
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut v = vec![1, 2, 3];
+         fn doSomething(x: &mut Vec<i32>) {
+             v.push(4); // use *v refer to mutable reference of v
+         }
+         doSomething(&mut v);
+         // v is [1, 2, 3, 4] now
+     }
+   #+END_SRC
+
+*** Rules
+    Any one borrows must have smaller effect area than the owner.
+    Under one area, you can either have 1 &mut T or several &T but not both.
+** Lifetime
+   Basic grammar is like this.
+   #+BEGIN_SRC rust
+     fn main() {
+         fn skip_prefix<'a, 'b>(line: &'a str, prefix: &'b str) -> &'a str {
+             line
+         }
+     }
+   #+END_SRC
+   <'a> is called lifetime a, it tells the compiler that the return value has the same lifetime ad input reference line.
+   This is useful when compiler can not tell the return value should have which lifetime.
+
+*** TODO struct
+*** TODO impl
+*** static
+    With the keyword 'static, variables last among the entire program lifetime.
+    #+BEGIN_SRC rust
+    fn main(){
+        let x:'static str = "Hello, world";
+    }
+    #+END_SRC
+
+    static is for global variables.
+    #+BEGIN_SRC rust
+    fn main() {
+        static FILE: &str = "program";
+    }
+    #+END_SRC
+*** Lifetime elision (when you don't want to write lifetime)
+    You can skip lifetime parameter, rust can deduce by these following rules:
+
+    Only things relating to references need lifetime.
+    #+BEGIN_SRC rust
+      fn main() {
+          fn do_something<'a>(v1: usize, v2: &'a str) -> &'a str {
+              v2
+          }
+          // v1 is not a reference, doesn't need lifetime
+      }
+    #+END_SRC
+
+    1.Each elided lifetime in a function's arguments becomes a distinct lifetime parameter.
+    #+BEGIN_SRC rust
+      fn main() {
+          fn do_something(a: &str, b: &str) -> &str {
+              a
+          }
+          // this function has 2 distinct lifetimes, no lifetime is assigned to the return value
+          // this is invalid
+      }
+    #+END_SRC
+
+    2.If there is exactly one input lifetime, elided or not, 
+    that lifetime is assigned to all elided lifetimes in the return values of that function.
+    #+BEGIN_SRC rust
+      fn main() {
+          fn do_something<'l>(a: 'a &str, b: &str) -> &str {
+              a
+          }
+          // lifetime l is assigned to a
+      }
+    #+END_SRC
+
+    3.If there are multiple input lifetimes, but one of them is `&self` or `&mut self`, 
+    the lifetime of `self` is assigned to all elided output lifetimes.
+    #+BEGIN_SRC rust
+      fn main(){
+          fn substr(s: &str, until: u32) -> &str; // elided
+          fn substr<'a>(s: &'a str, until: u32) -> &'a str; // expanded
+
+          fn get_str() -> &str; // ILLEGAL, no inputs
+
+          fn frob(s: &str, t: &str) -> &str; // ILLEGAL, two inputs
+          fn frob<'a, 'b>(s: &'a str, t: &'b str) -> &str; // Expanded: Output lifetime is ambiguous(not clear)
+
+          fn get_mut(&mut self) -> &mut T; // elided
+          fn get_mut<'a>(&'a mut self) -> &'a mut T; // expanded
+
+          fn args<T: ToCStr>(&mut self, args: &[T]) -> &mut Command; // elided
+          fn args<'a, 'b, T: ToCStr>(&'a mut self, args: &'b [T]) -> &'a mut Command; // expanded
+
+          fn new(buf: &mut [u8]) -> BufWriter; // elided
+          fn new<'a>(buf: &'a mut [u8]) -> BufWriter<'a>; // expanded
+      }
+    #+END_SRC
+
+** Mutability
+   By default variables are not mutable.
+   #+BEGIN_SRC rust
+     fn main() {
+         let a = 1;
+         a = 2; // error!
+     }
+   #+END_SRC
+   We can introduce mutability with the `mut` keyword.
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut x = 5;
+         x = 6; // no problem!
+     }
+   #+END_SRC
+   This is a mutable variable binding. When binding is mutable, it means you're allowed to change what the binding points to.
+   So in the above example, it's not so much that the value at ~x~ is changing, but that binding changed from one ~i32~ to another.
+
+   You can also create a reference to it, using ~&x~, but if you want to use the reference to change it, you will need a mutable reference:
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut x = 5;
+         let y = &mut x; // mutable reference
+     }
+   #+END_SRC
+   ~y~ is an immutable binding to a mutable reference, which means you can't bind ~y~ to something else(~y = 5~),
+   but y can be used to bind x to something else(~*y = 5~).
+
+   When you need both(mutable):
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut x = 5;
+         let mut y = &x;
+     }
+   #+END_SRC
+
+   Note that ~mut~ is part of a pattern, so you can do things like this:
+   #+BEGIN_SRC rust
+     fn main() {
+         let (mut x, y) = (5, 6); // x is mutable, y is not
+         fn do_something(mut x: i32) {}
+     }
+   #+END_SRC
+
+*** Field level mutability
+    Mutability is a property of either a borrow(~&mut~) or a binding(~let mut~).
+    This means you can't have a ~struct~ with some fields mutable and some immutable.
+    #+BEGIN_SRC rust
+      fn main() {
+          struct Point {
+              x: i32,
+              mut y: i32 // you can't have that
+          }
+      }
+    #+END_SRC
+    The mutability of a ~struct~ is its instance binding.
+    #+BEGIN_SRC rust
+      fn main() {
+          struct Point {
+              x: i32,
+              y: i32,
+          }
+
+          let mut a = Point { x: 0, y: 0 };
+          a.x = 10; // this works
+          let b = Point { x: 0, y: 0 };
+          b.x = 10; // this breaks
+      }
+    #+END_SRC
+    However, by using ~Cell<T>~, you can emulate field level mutability.
+    #+BEGIN_SRC rust
+      fn main() {
+          use std::cell::Cell;
+          struct Point {
+              x: i32,
+              y: Cell<i32>,
+          }
+
+          let point = Point { x: 0, y: 0 };
+          point.y.set(7);
+          println!("y is {}", point.y);
+      }
+    #+END_SRC
+   
+** Structs
+   ~struct~ is a way of creating more complex data types. For example, if we were doing calculations 
+   involving coordinates in 2D space, we would need both an x and a y value:
+   #+BEGIN_SRC rust
+     fn main() {
+         let origin_x = 0;
+         let origin_y = 0;
+     }
+   #+END_SRC
+
+   A ~struct~ lets us combine these two into a single, unified datatype with ~x~ and ~y~ as field labels:
+   #+BEGIN_SRC rust
+     fn main() {
+         struct Point {
+             x: i32,
+             y: i32,
+         }
+
+         let origin = Point { x: 0, y: 0 };
+
+         println!("The origin is at ({}, {})", origin.x, origin.y);
+     }
+   #+END_SRC
+
+   ~struct~ its self is never mutable, but the instance can be mutable.
+   #+BEGIN_SRC rust
+     fn main() {
+         struct Porn<'a> {
+             lesbian: String'a str'a str,
+             annal: String'a str'a str
+         }
+         let only_girls = Porn {
+             lesbian: "mostly",
+             annal: "sometimes"
+         };
+     }
+   #+END_SRC
+   
+   Your structure can still contain ~&mut~ pointers, which will let you do some kinds of mutation.
+   #+BEGIN_SRC rust
+     struct Point {
+         y: i32,
+         x: i32,
+     }
+
+     struct PointRef<'a> {
+         x: &'a mut i32,
+         y: &'a mut i32,
+     }
+     fn main() {
+         let mut point = Point { x: 0, y: 0 };
+         {
+             let r = PointRef {
+                 x: &mut point.x,
+                 y: &mut point.y,
+             };
+             ,*r.x = 5;
+             ,*r.y = 6;
+         }
+         assert_eq!(5, point.x);
+         assert_eq!(6, point.y);
+     }
+   #+END_SRC
+
+*** Update syntax(update a struct)
+    A ~sturct~ can include ~..~ to indicate that you want to use a copy of some other ~sturct~ for some of the values.
+    #+BEGIN_SRC rust
+      struct Point3D {
+          x: i32,
+          y: i32,
+          z: i32,
+      }
+      fn main() {
+          let mut point = Point3D { x: 0, y: 0, z: 0 };
+          point = Point3D { x: 1, ..point };
+          // this only updates x, but keeps y and z
+
+          // it doesn't have to be the same struct
+          let anoter_point = Point3D { x: 1, y: 9, z: 2 };
+          point = Point3D { x: 1, ..anoter_point };
+          // point will be (1, 9, 2)
+      }
+    #+End_SRC
+
+*** Tuple struct
+    Type between a ~tuple~ and a ~struct~, called ~tuple struct~.
+    Tuple structs have names, but their fields don't. They can be declared with the ~sturct~ keyword, and then with a name followed by a tuple.
+    #+BEGIN_SRC rust
+      struct Color(i32, i32, i32);
+      struct Point(i32, i32, i32);
+      fn main() {
+          let black = Color(0, 0, 0);
+          let origin = Point(0, 0, 0);
+          // black and origin has the same value, but they are not the same type
+
+          // they can be accessed by let
+          let (x, y, z) = origin;
+          let x = origin.0;
+      }
+    #+END_SRC
+
+    One case with ~struct tuple~ is when they have only one field.
+    #+BEGIN_SRC rust
+      struct Meter(i32);
+      fn main() {
+          let length = Meter(2);
+          // Meter is still i32, but has an extra meaning with its name
+          let integer_length = length.0;
+          let Meter(integer_length) = length;
+          // two ways to get access to field values
+      }
+    #+END_SRC
+
+*** Unit like structs
+    You can define ~sturct~ with no member at all.
+    #+BEGIN_SRC rust
+      struct Electron{};
+      struct Null;
+      fn main(){
+          let x = Electron{};
+          let empty = Null;
+      }
+    #+END_SRC
+    It resembles like the empty ~tuple~ ~()~.
+** Enums
+   An ~enum~ is a type that represents data that is one of several possible variants.
+   Each variant in ~enum~ can optionally have data associated with it.
+   #+BEGIN_SRC rust
+     enum Message {
+         Quit,
+         ChangeColor(i32, i32, i32),
+         Move { x: i32, y: i32 },
+         Write(String),
+     }
+     fn main() {
+         let x: Message = Message::Move { x: 3, y: 4 };
+     }
+   #+END_SRC
+
+   A value of an ~enum~ type contains information about which variant it is, in addition to any data associated with that variant.
+   This is sometimes referred to as a 'tagged union', since the data includes a 'tag' indicating what type it is.
+   The compiler uses this information to enforce that you're accessing data in the ~enum~ safely.
+   For instance, you can't simply try to destructure a value as if it were one of the possible variants.
+   #+BEGIN_SRC rust
+     enum Message {
+         Quit,
+         ChangeColor(i32, i32, i32),
+         Move { x: i32, y: i32 },
+         Write(String),
+     }
+     fn main() {
+         let p: Message = Message::Move { x: 3, y: 4 };
+         let Message::Move(x, y) = p; // compile error
+     }
+   #+END_SRC
+   There are two ways to safely get values from an ~enum~, by pattern matching variants with ~match~ expressions or implementing by ourselves.
+
+   An ~enum~ constructor can also be used like a function.
+   #+BEGIN_SRC rust
+     enum Message {
+         Quit,
+         ChangeColor(i32, i32, i32),
+         Move { x: i32, y: i32 },
+         Write(String),
+     }
+     fn main() {
+         let m = Message::Write("Hello_world".to_string());
+     }
+   #+END_SRC
+   Same as below:
+   #+BEGIN_SRC rust
+     enum Message {
+         Quit,
+         ChangeColor(i32, i32, i32),
+         Move { x: i32, y: i32 },
+         Write(String),
+     }
+     fn main() {
+         fn foo(x: String) -> Message {
+             Message::Write(x);
+         }
+         let x = foo("Hellow_world".to_string());
+     }
+   #+END_SRC
+** Match
+   It's like switch case, but unlike switch case in ~javascript~, if matches a case, it will end the loop instantly.
+   #+BEGIN_SRC rust
+     fn main() {
+         let x = 5;
+         match x {
+             1 => println!("one"),
+             2 => println!("two"),
+             3 => println!("three"),
+             4 => println!("four"),
+             _ => println!("something else"),
+         }
+     }
+   #+END_SRC
+
+   Match is an ~expression~, so it can be placed at right side of ~=~.
+   #+BEGIN_SRC rust
+     fn main() {
+         let x = 5;
+         let result = match x {
+             1 => "one",
+             2 => "two",
+             3 => "three",
+             4 => "four",
+             _ => "something else",
+         };
+         println!("{}", result);
+     }
+   #+END_SRC
+
+   Match ~enum~
+   #+BEGIN_SRC rust
+     enum Message {
+         Quit,
+         ChangeColor(i32, i32, i32),
+         Move { x: i32, y: i32 },
+         Write(String),
+     }
+     fn quit() {}
+     fn change_color(r: i32, g: i32, b: i32) {}
+     fn move_cursor(x: i32, y: i32) {}
+     fn process_message(msg: Message) {
+         match msg {
+             Message::Quit => quit(),
+             Message::ChangeColor(r, g, b) => change_color(r, g, b),
+             Message::Move { x: x, y: y } => move_cursor(x, y),
+             Message::Write(s) => println!("{}", s),
+         }
+     }
+     fn main() {
+         let m: Message = Message::ChangeColor(1, 1, 1);
+         process_message(m);
+     }
+   #+END_SRC
+   
+** Patterns
+*** shadow variables
+   When using ~match~, variables inside the match block might shadow outside variables with the same name.
+   #+BEGIN_EXPORT rust
+   fn main() {
+       let x = 1;
+       let c = 'c';
+       match c {
+           x => println!("x is {}, c is {}", x, c),
+           // this prints out 'x is c, c is c', because the only arm matches c is when x = c
+           // it introduces a new binding named x, it takes the value of c
+       }
+       println!("x is {}", x);
+       // this prints 'x is 1', outside the scope x is still 1
+   }
+   #+END_EXPORT
+
+*** multiple patterns
+    You can match multiple patterns with ~|~.
+    #+BEGIN_SRC rust
+      fn main() {
+          let x = 1;
+          match x {
+              1 | 2 => println!("one or two"),
+              _ => println!("not one or two"),
+          }
+      }
+    #+END_SRC
+
+*** Destructuring
+    If you have a compound data type like ~struct~, you can destructure it inside of a pattern:
+    #+BEGIN_SRC rust
+      struct Point {
+          x: i32,
+          y: i32,
+      }
+      fn main() {
+          let p: Point = Point { x: 1, y: 2 };
+          match p {
+              Point { x, y } => println!("x is {}, y is {}", x, y),
+          }
+          match p {
+              Point { x: x1, y: y1 } => println!("x is {}, y is {}", x1, y1), // we can use : to give a value a different name
+          }
+
+          match p {
+              Point {x, ..} => println!("x is {}", x), // you don't have to give them all names
+          }
+          match p {
+              Point {y, ..} => println!("y is {}", y), // you can match any member, not only the first
+          }
+      }
+    #+END_SRC
+*** Refs and mut
+    You can get references while matching, also mutable references.
+    #+BEGIN_SRC rust
+      fn main() {
+          let x = 5;
+          match x {
+              ref r => println!("Got a ref {} of x", r),
+          }
+      }
+    #+END_SRC
+    Mutable references:
+    #+BEGIN_SRC rust
+      fn main() {
+          let mut x = 5;
+          match x {
+              ref mut r => println!("Got a mutable ref {} of x", r),
+          }
+      }
+    #+END_SRC
+    I just don't understand why not using ~&mut r~, just like every other places...
+*** Match guards
+    It's just like ~&&~ in normal switch cases.
+    The reason not using ~&~, might be ~&~ in rust represents reference...
+    #+BEGIN_SRC rust
+      enum OptionalInt {
+          Value(i32),
+          Missing,
+      }
+      fn main() {
+          let x = OptionalInt::Value(5);
+          match x {
+              OptionalInt::Value(v) if v > 5 => println!("Got {} bigger than 5", v),
+              OptionalInt::Value(..) => println!("Got an integer less than 5"),
+              OptionalInt::Missing(..) => println!("Got something that is not an integer"),
+          }
+      }
+    #+END_SRC
+*** Matching ranges
+    You can match a range with ~...~:
+    #+BEGIN_SRC rust
+      fn main() {
+          let x = 1;
+          match x {
+              1...5 => println!("one to five"),
+          }
+          // you can bind value while using range matching
+          match x {
+              value @ 1...5 => println!("Got {}", value),
+          }
+          // you have to bind twice while using |
+          match x {
+              value @ 1...5 | value @ 6...10 => println!("Got {}", value),
+          }
+      }
+    #+END_SRC
+** Method syntax
+*** Basic syntax
+    ~structs~ in rust is pretty much like objects in other language, in ~sturct~ you can also implement method for it.
+    #+BEGIN_SRC rust
+      struct Circle {
+          center: (i32, i32),
+          radius: f64,
+      }
+      impl Circle {
+          fn area(&self) -> f64 {
+              std::f64::consts::PI * self.radius * self.radius
+          }
+      }
+      fn main() {
+          let o = Circle {
+              center: (0, 0),
+              radius: 1.0,
+          };
+
+          println!("area is {}", o.area());
+      }
+    #+END_SRC
+    ~&self~ ~self~ ~&mut self~ is pretty much the rust version of ~this~, normally what you want is ~&self~ and ~&mut self~,
+    Using ~&self~ most the time to avoid move value problems.
+
+    By returning self, you can implement function chaining easily.
+    #+BEGIN_SRC rust
+      struct Circle {
+          center: (i32, i32),
+          radius: f64,
+      }
+      impl Circle {
+          fn double(&self) -> Circle {
+              Circle {
+                  center: self.center,
+                  radius: self.radius * 2.0,
+              }
+          }
+          fn area(&self) -> f64 {
+              let a = std::f64::consts::PI * &self.radius * &self.radius;
+              a
+          }
+      }
+      fn main() {
+          let o = Circle {
+              center: (0, 0),
+              radius: 1.3,
+          };
+
+          println!("area is {}", o.double().area());
+      }
+    #+END_SRC
+*** Builder pattern
+    Very popular pattern in objective languages, basically ~new~ some stuff.
+    #+BEGIN_SRC rust
+      struct Circle {
+          center: (i32, i32),
+          radius: f64,
+      }
+      impl Circle {
+          fn new(center: (i32, i32), radius: f64) -> Circle {
+              Circle {
+                  center: center,
+                  radius: radius,
+              }
+          }
+      }
+      fn main() {
+          let o = Circle::new((0, 0), 2.0);
+      }
+    #+END_SRC
+** Strings
+*** String to &str and &str to String
+   Strings in rust is very different from other languages, it has 2 types of string ~String~ and ~&str~.
+   ~String~ is a heap allocated resizable guaranteed ~UTF-8~ bytes.
+   ~&str~ is a reference to a ~String~, unresizable by default. Usually called string slices.
+   #+BEGIN_SRC rust
+     fn main(){
+         let s = "Hello world"; // this is a &'static str
+         let string_s = s.to_string() // string_s is String typed
+     }
+   #+END_SRC
+
+   ~String~ can coerce(force change) to ~&str~ by using ~&~:
+   #+BEGIN_SRC rust
+     fn main() {
+         let s = "hello".to_string();
+         let s_slice = &s;
+     }
+   #+END_SRC
+
+   However some functions require a ~&str trait~ not just ~&str~:
+   #+BEGIN_SRC rust
+     fn main() {
+         let ip = "192.168.3.141:4001";
+         TcpStream::connect(ip); // that's ok, it takes a &str
+
+         let s_ip = ip.to_string();
+         TcpStream::connect(s_ip); // that won't work, s_ip is a String type
+         TcpStream::connect(&*s_ip) // that works because the input param is &str again
+     }
+   #+END_SRC
+   
+*** String push and concate
+   ~Strings~ can resize by pushing new ~&str~ or concate new ~&str~:
+   #+BEGIN_SRC rust
+     fn main() {
+         let mut s = "Hello".to_string();
+         s.push(", ");
+         let hello_world = s + "world";
+         println!("{}", s);
+     }
+   #+END_SRC
+
+*** Indexing
+    You can't access chars in string using ~"hello"[1]~ due to performance issue.
+    But you can alternatively access chars or bytes by turning a ~&str~ to a something iterable.
+    #+BEGIN_SRC rust
+      fn main() {
+          let name = "James";
+          for i in name.as_bytes() {
+              print!("{}", i);
+          }
+          println!("");
+          for i in name.chars() {
+              print!("{}", i);
+          }
+          println("first char is {}", name.chars().nth(0)); // kind like name[0]
+      }
+    #+END_SRC
+*** Slice
+    You can get string slices through slice a ~&str~:
+    #+BEGIN_SRC rust
+      fn main() {
+          let a = "hello world";
+          let b = &a[0..5];
+      }
+    #+END_SRC
+    Note these are bytes indexes not character indexes, so ~&a[0..2]~ could go wrong.
+
+** Generics
+   Sometimes when we are writing a function, we may want it work with multiple types of argument.
+   In rust we can do this by using ~Generics~, which means multiple forms of argument.
+   Rust standard library provides a type ~Option<T>~ which is a generic:
+   #+BEGIN_SRC rust
+     enum Option<T> {
+         Some(T),
+         None,
+     }
+     fn main() {
+         let x: Option<i32> = Option::Some(5); // this works, 5 is i32 typed
+         let y: Option<f64> = Option::Some(5); // this doesn't work, 5 is not a f64
+         // enumerate Option is not required, because Option is in rust standard library
+         // it works pretty much like the enumerate Option
+     }
+   #+END_SRC
+
+   Another built in generic is ~Result~:
+   #+BEGIN_SRC rust
+     enum Result<T, E> {
+         Ok(T),
+         Error(E),
+     }
+     fn main() {
+         let x: Result<i32> = Ok(5);
+     }
+   #+END_SRC
+
+*** Generic functions:
+   #+BEGIN_SRC rust
+     fn main() {
+         fn takes_one_thing<T>(thing: T) {}
+         fn takes_two_same_things<T>(thing_1: T, thing_2: T) {}
+         fn takes_two_things<T, Q>(thing_1: T, thing_2: Q) {}
+     }
+   #+END_SRC
+   As you can see, rust put generic types in ~<>~ where also ~lifetimes~ were put.
+
+*** Generic structs
+    You can use generic in structs:
+    #+BEGIN_SRC rust
+      struct Point<T> {
+          x: T,
+          y: T,
+      }
+
+      impl<T> Point<T> {
+          fn do_some_stuff() {}
+      }
+
+      fn main() {}
+    #+END_SRC
+
+** Traits
+   Traits are pretty much descriptions of ~structs~, they look like a bunch of functions with no function body. 
+   You can implement a ~trait~ for a ~struct~ like this:
+   #+BEGIN_SRC rust
+     struct Circle {
+         center: (i32, i32),
+         radius: f64,
+     }
+
+     trait HasArea {
+         fn area(&self) -> f64 {}
+     }
+
+     impl HasArea for Circle {
+         fn area(&self) -> f64 {
+             self.radius * self.radius * std::f64::consts::PI
+         }
+     }
+
+     fn main() {
+         let some_circle = Circle {
+             center: (0, 0),
+             radius: 3.2,
+         };
+         println!("area is {}", some_circle.area());
+     }
+   #+END_SRC
+   
+*** Trait with generics
+    In generic section, we wrote a function that takes anything with a type ~T~.
+    There is no limitation for ~T~, however sometimes our function works with only certain types.
+    In order to describe that type, we can use ~trait~, as ~trait~ tells us this type should implement what method.
+
+    Here is an example:
+    #+BEGIN_SRC rust
+      fn print_area<T>(x: T) {
+          println!("area is {}", x.area());
+      }
+
+      fn main() {
+          let some_shape = 1;
+          print_area(some_shape);
+      }
+    #+END_SRC
+    In function ~print_area~ you can input any type as param, but only when input has a method ~area~ can this function work.
+    Apparently ~some_shape~ must be an instance of a ~sturct~ that implemented area method.
+
+    So you can do this:
+    #+BEGIN_SRC rust
+      struct Circle {
+          center: (i32, i32),
+          radius: f64,
+      }
+      struct Square {
+          center: (i32, i32),
+          side: f64,
+      }
+      trait HasArea {
+          fn area(&self) -> f64;
+      }
+      impl HasArea for Circle {
+          fn area(&self) -> f64 {
+              std::f64::consts::PI * self.radius * self.radius
+          }
+      }
+      impl HasArea for Square {
+          fn area(&self) -> f64 {
+              self.side * self.side
+          }
+      }
+
+      fn print_area<T: HasArea>(shape: T) {
+          println!("the area is {}", shape.area());
+      }
+      fn main() {
+          let round_a = Circle {
+              center: (0, 0),
+              radius: 1.2,
+          };
+          let square_a = Square {
+              center: (0, 0),
+              side: 2.3,
+          };
+          print_area(round_a);
+          print_area(square_a);
+      }
+    #+END_SRC
+
+    You can bound ~trait~ to ~generic structs~ too:
+    #+BEGIN_SRC rust
+      struct Retangle<T> {
+          width: T,
+          height: T,
+      }
+
+      impl<T: PartialEq> Retangle<T> {
+          fn is_square(&self) -> bool {
+              self.width == self.height
+          }
+      }
+
+      fn main() {
+          let mut r = Retangle {
+              width: 20,
+              height: 30,
+          };
+
+          console(r.is_square());
+          r.height = 20;
+          console(r.is_square());
+      }
+
+      fn console<T: std::fmt::Display>(content: T) {
+          println!("{}", content);
+      }
+    #+END_SRC
+    In order to do ~==~ type ~T~ must implement ~core::cmp::PartialEq~ trait.
+
+*** Trait implement rules
+    Don't implement anything on basic types like ~i32~, this will mess up expected methods of basic type.
+
+    However even if one does implement a ~trait~ on ~i32~, it won't work unless you ~use~ the ~trait~:
+    #+BEGIN_SRC rust
+      fn main() {
+          use std::io::Write; // if not use this, compile won't work
+          let mut f = std::fs::File::create("testStandardFileWrite.txt")
+              .expect("can not create test.txt");
+          let buf = b"something";
+          let result = f.write(buf);
+          match result {
+              Ok(return_val) => println!("success, exit code: {}", return_val),
+              Err(error_code) => println!("failed, exit msg: {}", error_code),
+          }
+      }
+    #+END_SRC
+
+*** Multiple Trait bounds
+    You can bond to multiple ~traits~ with ~+~:
+    #+BEGIN_SRC rust
+      fn main() {
+          fn some_fn<T: PartialEq + HasArea>(d: T) -> f64 {}
+      }
+    #+END_SRC
+
+    When you come across with multiple ~generics~ with multiple ~traits~, it looks stupid:
+    #+BEGIN_SRC rust
+      fn main() {
+          fn some_fn<T: PartialEq + HasArea, E: FuckGirl + Anal>(d: T, e: E) -> f64 {}
+      }
+    #+END_SRC
+
+    So we have ~where~ so make this more readable:
+    #+BEGIN_SRC rust
+      fn main() {
+          fn some_fn<T, E>(d: T, e: E)
+              where T: Preteen + Nude,
+                    E: Lolita + Guy
+          {
+          }
+      }
+    #+END_SRC
+
+    ~where~ can also describe build in types like i32:
+    #+BEGIN_SRC rust
+      fn main() {
+          fn some_fn<E>(d: i32, e: E)
+              where i32: Preteen + Nude,
+                    E: Lolita + Guy
+          {
+          }
+      }
+    #+END_SRC
+
+*** Default methods
+    You can have default methods in ~trait~ like this:
+    #+BEGIN_SRC rust
+      trait Validation {
+          fn is_valid(&self) -> bool;
+          fn is_notvalid(&self) -> bool {
+              !self.is_valid()
+          }
+      }
+    #+END_SRC
+
+** Drop (~trait~)
+   If a type implemented ~Drop~ which is a build in ~trait~ in rust, 
+   its ~drop~ function will be executed right after this variable goes out of ~scope~.
+   #+BEGIN_SRC rust
+     struct Circle {
+         radius: f64,
+     }
+     struct Square {
+         side: f64,
+     }
+     trait HasArea {
+         fn area(&self) -> f64;
+     }
+     impl HasArea for Circle {
+         fn area(&self) -> f64 {
+             std::f64::consts::PI * self.radius * self.radius
+         }
+     }
+     impl HasArea for Square {
+         fn area(&self) -> f64 {
+             self.side * self.side
+         }
+     }
+     impl Drop for Circle {
+         fn drop(&mut self) {
+             console(&"Circle goes out of scope");
+         }
+     }
+     impl Drop for Square {
+         fn drop(&mut self) {
+             console(&"Square goes out of scope");
+         }
+     }
+
+     fn add_area<T, E>(shape_1: &T, shape_2: &E) -> f64
+         where T: HasArea,
+               E: HasArea
+     {
+         shape_1.area() + shape_2.area()
+     }
+     fn main() {
+         let o = Circle { radius: 3 as f64 };
+         let s = Square { side: 3.2 };
+         console(&add_area(&o, &s));
+     }
+
+     fn console<T: std::fmt::Display>(content: &T) {
+         println!("{}", content);
+     }
+   #+END_SRC
+** if let
+   Use as a single arm of match:
+   #+BEGIN_SRC rust
+     fn main() {
+         let x = Result::Ok(2);
+         if let Result::Ok(value) = x {
+             println!("successfully got value {}", value);
+         }
+     }
+   #+END_SRC
+   ~match~ would have to match every arm, but ~if let~ only have to care about one.
+
+** TODO Trait objects                                                          
+   Well, this chapter confuses me.
+
+   Function ~show_self~ will be compile to two different versions like ~show_self_point~ and ~show_self_retangle~,
+   this is called ~static dispatch~, more code but good performance.
+   #+BEGIN_SRC rust
+     trait PrintSelf {
+         fn print_self(&self);
+     }
+
+     struct Point {
+         x: i32,
+         y: i32,
+     }
+
+     struct Retangle {
+         width: i32,
+         height: i32,
+     }
+
+     impl PrintSelf for Point {
+         fn print_self(&self) {
+             println!("I am a point ({}, {})", self.x, self.y);
+         }
+     }
+
+     impl PrintSelf for Retangle {
+         fn print_self(&self) {
+             println!("I am a retangle width: {}, height: {}",
+                      self.width,
+                      self.height);
+         }
+     }
+
+     fn show_self<T: PrintSelf>(something: T) {
+         something.print_self();
+     }
+
+     fn main() {
+         let point_a = Point { x: 3, y: 3 };
+         let retangle_a = Retangle {
+             width: 3,
+             height: 3,
+         };
+         show_self(point_a);
+         show_self(retangle_a);
+     }
+   #+END_SRC
+   Above code is same as the following:
+   #+BEGIN_SRC rust
+     trait PrintSelf {
+         fn print_self(&self);
+     }
+
+     struct Point {
+         x: i32,
+         y: i32,
+     }
+
+     struct Retangle {
+         width: i32,
+         height: i32,
+     }
+
+     impl PrintSelf for Point {
+         fn print_self(&self) {
+             println!("I am a point ({}, {})", self.x, self.y);
+         }
+     }
+
+     impl PrintSelf for Retangle {
+         fn print_self(&self) {
+             println!("I am a retangle width: {}, height: {}",
+                      self.width,
+                      self.height);
+         }
+     }
+
+     fn show_self_point(something: Point) {
+         something.print_self();
+     }
+
+     fn show_self_retangle(something: Retangle) {
+         something.print_self();
+     }
+
+     fn main() {
+         let point_a = Point { x: 3, y: 3 };
+         let retangle_a = Retangle {
+             width: 3,
+             height: 3,
+         };
+         show_self_point(point_a);
+         show_self_retangle(retangle_a);
+     }
+   #+END_SRC
+   Better finish this *after* ~raw pointers~
+** Closures
+   Pretty much like ~closures~ in javascript:
+   #+BEGIN_SRC javascript
+     (function (initValue) {
+       return initValue + 1;
+     })(1)
+   #+END_SRC
+   In rust:
+   #+BEGIN_SRC rust
+     fn main() {
+         let plus_one = |x: i32| x + 1;
+         let plus_two = |x: mut i32| {
+             x += 1;
+             x += 1
+         };
+         lex mut x = 1;
+         assert_eq!(2, plus_one(1));
+         assert_eq!(3, plus_two(x));
+     }
+   #+END_SRC
+   They are more like ~function expressions~ in javascript rather than ~(fn)()~.
+
+*** Move closures
+    Following code can't compile:
+    #+BEGIN_SRC rust
+      fn main() {
+          let mut num = 5;
+          let plus_num = |x: i32| x + num;
+          let y = &mut num;
+      }
+    #+END_SRC
+    It's because in ~closure~ ~num~ is borrowed as immutable, but for ~y~ it's also borrowed as mutable.
+    We can't have mutable and immutable in the same scope.
+
+    You can do this to separate borrows:
+    #+BEGIN_SRC rust
+      fn main() {
+          let mut num = 5;
+          {
+              let plus_num = |x: i32| x + num;
+          }
+          let y = &mut num;
+      }
+    #+END_SRC
+    This would compile, but nobody can get ~plus_num~ outside ~{}~, that's probably not we want.
+
+    In order to make ~num~ plus a number, we can do this:
+    #+BEGIN_SRC rust
+      fn main() {
+          let mut num = 5;
+          {
+              let plus_num = |x: i32| num += x;
+              plus_num(5);
+          }
+          let y = &mut num;
+          println!("num is {}", num); // expect 10
+      }
+    #+END_SRC
+    In this case, the ~closure~ takes a ~mutable reference~ of num, so that it can mute num inside it's scope.
+
+    With the ~move closure~, it's different:
+    #+BEGIN_SRC rust
+      fn main() {
+          let mut num = 5;
+          {
+              let plus_num = move |x: i32| num += x;
+              plus_num(5);
+          }
+          let y = &mut num;
+          println!("num is {}", num); // it's 5
+      }
+    #+END_SRC
+    Rather than taking a ~mutable reference~ we took a ~copy of ownership~, this works with types have ~copy trait~.
